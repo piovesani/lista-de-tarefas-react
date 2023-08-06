@@ -25,8 +25,9 @@ const Page = () => {
       </div>
 
       <ul className="w-full max-w-lg list-disc pl-5">
-        <li>Tarefa específica - <button className="hover:underline-offset-0">[ deletar ]</button></li>
-        <li>Tarefa específica - <button className="hover:underline-offset-0">[ deletar ]</button></li>
+        {list.map(item => (
+          <li>{item.label} - <button className="hover:underline-offset-0">[ deletar ]</button></li>
+        ))}
       </ul>
     </div>
   );
