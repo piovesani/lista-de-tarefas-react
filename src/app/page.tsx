@@ -8,19 +8,31 @@ const Page = () => {
   const [itemInput, setItemInput] = useState('');
 
   const [list, setList] = useState<TodoItem[]>([
-    { label: 'Fazer dever de casa', checked: false },
-    { label: 'Fazer o bolo', checked: false }
+    { id: 1, label: 'Criar um projeto', checked: false },
+    { id: 2, label: 'Dar o commit', checked: false }
   ]);
 
   const handleAddButton = () => {
-    if(itemInput.trim() === '') return;
+    if (itemInput.trim() === '') return;
 
-    setList([ ...list, { label: itemInput, checked: false }]);
+    setList([...list, { id: list.length + 1, label: itemInput, checked: false }]);
     setItemInput('');
   }
 
-  const deleteItem = (index: number) => {
-    setList(list.filter((item, key) => key !== index));
+  const deleteItem = (id: number) => {
+    setList(list.filter((item) => item.id !== id));
+  }
+
+  const toggleItem = (id: number) => {
+    let newList = [...list];
+
+    for(let i in newList){
+      if(newList[i].id === id){
+        newList[i].checked = !newList[i].checked;
+      }
+    }
+
+    setList(newList);
   }
 
   return (
@@ -36,14 +48,32 @@ const Page = () => {
             onChange={e => setItemInput(e.target.value)}
           />
 
-          <button onClick={handleAddButton} className="flex-1">Adicionar</button>
+          <button
+            onClick={handleAddButton}
+            className="bg-gray-700 border-2 border-gray-600 py-2 px-6 rounded-md ml-3 hover:bg-gray-600"
+          >Adicionar
+          </button>
         </div>
 
         <p className="w-full my-5">{list.length} tems na lista</p>
         <ul className="w-full max-w-lg list-disc pl-5">
-          {list.map((item, index)=> (
-            <li key={index}>{item.label} - 
-              <button onClick={() => deleteItem(index)} className="hover:underline-offset-0">[ deletar ]</button>
+          {list.map((item) => (
+            <li key={item.id} className="list-none">
+              <div className="flex items-center mb-3 -ml-4 place-content-between">
+                <div className="flex items-center">
+                  <input
+                    onClick={() => toggleItem(item.id)}
+                    type="checkbox"
+                    checked={item.checked}
+                    className="w-6 h-6 mr-4" />
+                  {item.label}
+                </div>
+
+                <button
+                  onClick={() => deleteItem(item.id)}
+                  className="bg-gray-700 border-2 border-gray-600 py-2 px-6 rounded-md ml-3 hover:bg-gray-600"
+                >Deletar</button>
+              </div>
             </li>
           ))}
         </ul>
