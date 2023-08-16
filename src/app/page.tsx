@@ -1,12 +1,40 @@
 "use client"
 
-import { useState } from "react";
-import { TodoItem } from "./types/TodoItem";
+import { useReducer, useState } from "react";
+import { TodoItem } from "@/types/TodoItem";
+import { todoListReducer } from "./reducers/todoListReducer";
 
 const Page = () => {
 
-  const [itemInput, setItemInput] = useState('');
+  const [list, dispatch] = useReducer(todoListReducer, []);
+  const [addField, setAddField] = useState('');
+  const handleAddClick = () => {
 
+
+    dispatch({
+      type: "toggleDone",
+      payload: {
+        id: 2
+      }
+    });
+
+    dispatch({
+      type: "editText",
+      payload: {
+        id: 2,
+        newText: "Bla bla bla"
+      }
+    });
+
+    dispatch({
+      type: "remove",
+      payload: {
+        id: 3
+      }
+    });
+  }
+  /*
+  
   const [list, setList] = useState<TodoItem[]>([
     { id: 1, label: 'Criar um projeto', checked: false },
     { id: 2, label: 'Dar o commit', checked: false }
@@ -34,50 +62,68 @@ const Page = () => {
 
     setList(newList);
   }
+  */
+
+  const handleAddButton = () => {
+    if (addField.trim() === '') return false;
+
+    dispatch({
+      type: 'add',
+      payload: {
+        text: addField.trim()
+      }
+    });
+    setAddField('');
+  }
+
+  const toggleItem = (id: number) => {
+
+  }
+
+  const deleteItem = (id: number) => {
+  }
 
   return (
-    <div className="w-screen h-screen flex flex-col items-center text-2xl">
-      <h1 className="text-4xl mt-5 my-5">Lista de tarefas</h1>
-      <div className="w-1/3">
-        <div className="flex w-full max-w-lg my-3 p-4 rounded-md bg-gray-700 border-2 border-gray-600">
-          <input
-            type="text"
-            placeholder="O que deseja fazer?"
-            className="w-3/4 border border-black p-3 text-2xl text-black rounded-md mr-3"
-            value={itemInput}
-            onChange={e => setItemInput(e.target.value)}
-          />
+    <div className="container mx-auto">
+      <h1 className="text-center text-4xl my-4">Lista de tarefas</h1>
+      <div className="max-w-2xl mx-auto flex rounded-md border bg-gray-800 border-gray-400 p-4 my-4">
+        <input
+          type="text"
+          placeholder="Digite uma nova tarefa"
+          className="flex-1 rounded-md  border border-white p-3 bg-transparent text-white outline-none"
+          value={addField}
+          onChange={e => setAddField(e.target.value)}
+        />
 
-          <button
-            onClick={handleAddButton}
-            className="bg-gray-700 border-2 border-gray-600 py-2 px-6 rounded-md ml-3 hover:bg-gray-600"
-          >Adicionar
-          </button>
-        </div>
-
-        <p className="w-full my-5">{list.length} tems na lista</p>
-        <ul className="w-full max-w-lg list-disc pl-5">
-          {list.map((item) => (
-            <li key={item.id} className="list-none">
-              <div className="flex items-center mb-3 -ml-4 place-content-between">
-                <div className="flex items-center">
-                  <input
-                    onClick={() => toggleItem(item.id)}
-                    type="checkbox"
-                    checked={item.checked}
-                    className="w-6 h-6 mr-4" />
-                  {item.label}
-                </div>
-
-                <button
-                  onClick={() => deleteItem(item.id)}
-                  className="bg-gray-700 border-2 border-gray-600 py-2 px-6 rounded-md ml-3 hover:bg-gray-600"
-                >Deletar</button>
-              </div>
-            </li>
-          ))}
-        </ul>
+        <button
+          onClick={handleAddButton}
+          className="bg-gray-700 border-2 border-gray-600 py-2 px-6 rounded-md ml-3 hover:bg-gray-600"
+        >Adicionar
+        </button>
       </div>
+
+      <p className="w-full my-5">{list.length} items na lista</p>
+      <ul className="w-full max-w-lg list-disc pl-5">
+        {list.map((item) => (
+          <li key={item.id} className="list-none">
+            <div className="flex items-center mb-3 -ml-4 place-content-between">
+              <div className="flex items-center">
+                <input
+                  onClick={() => toggleItem(item.id)}
+                  type="checkbox"
+                  checked={item.checked}
+                  className="w-6 h-6 mr-4" />
+                {item.label}
+              </div>
+
+              <button
+                onClick={() => deleteItem(item.id)}
+                className="bg-gray-700 border-2 border-gray-600 py-2 px-6 rounded-md ml-3 hover:bg-gray-600"
+              >Deletar</button>
+            </div>
+          </li>
+        ))}
+      </ul>
 
     </div>
   );
