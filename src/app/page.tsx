@@ -8,61 +8,6 @@ const Page = () => {
 
   const [list, dispatch] = useReducer(todoListReducer, []);
   const [addField, setAddField] = useState('');
-  const handleAddClick = () => {
-
-
-    dispatch({
-      type: "toggleDone",
-      payload: {
-        id: 2
-      }
-    });
-
-    dispatch({
-      type: "editText",
-      payload: {
-        id: 2,
-        newText: "Bla bla bla"
-      }
-    });
-
-    dispatch({
-      type: "remove",
-      payload: {
-        id: 3
-      }
-    });
-  }
-  /*
-  
-  const [list, setList] = useState<TodoItem[]>([
-    { id: 1, label: 'Criar um projeto', checked: false },
-    { id: 2, label: 'Dar o commit', checked: false }
-  ]);
-
-  const handleAddButton = () => {
-    if (itemInput.trim() === '') return;
-
-    setList([...list, { id: list.length + 1, label: itemInput, checked: false }]);
-    setItemInput('');
-  }
-
-  const deleteItem = (id: number) => {
-    setList(list.filter((item) => item.id !== id));
-  }
-
-  const toggleItem = (id: number) => {
-    let newList = [...list];
-
-    for(let i in newList){
-      if(newList[i].id === id){
-        newList[i].checked = !newList[i].checked;
-      }
-    }
-
-    setList(newList);
-  }
-  */
 
   const handleAddButton = () => {
     if (addField.trim() === '') return false;
@@ -77,10 +22,33 @@ const Page = () => {
   }
 
   const toggleItem = (id: number) => {
-
+    dispatch({
+      type: "toggleDone",
+      payload: { id }
+    });
   }
 
   const deleteItem = (id: number) => {
+    if(!window.confirm('Tem certeza que deseja excluir?')) return false;
+    dispatch({
+      type: "remove",
+      payload: { id }
+    });
+  }
+
+  const editItem = (id: number) => {
+    const item = list.find(i => i.id === id);
+
+    if (!item) return false;
+
+    const newText = window.prompt('Editar tarefa', item.label);
+
+    if (!newText || newText.trim() == "") return false;
+    dispatch({
+      type: "editText",
+      payload: { id, newText }
+    });
+
   }
 
   return (
@@ -97,30 +65,33 @@ const Page = () => {
 
         <button
           onClick={handleAddButton}
-          className="bg-gray-700 border-2 border-gray-600 py-2 px-6 rounded-md ml-3 hover:bg-gray-600"
+          className="bg-green-700 py-2 px-6 rounded-md ml-3 hover:bg-green-600"
         >Adicionar
         </button>
       </div>
 
-      <p className="w-full my-5">{list.length} items na lista</p>
-      <ul className="w-full max-w-lg list-disc pl-5">
+      <p className="text-center">{list.length} items na lista</p>
+      <ul className="max-w-2xl mx-auto">
         {list.map((item) => (
-          <li key={item.id} className="list-none">
-            <div className="flex items-center mb-3 -ml-4 place-content-between">
-              <div className="flex items-center">
-                <input
-                  onClick={() => toggleItem(item.id)}
-                  type="checkbox"
-                  checked={item.checked}
-                  className="w-6 h-6 mr-4" />
-                {item.label}
-              </div>
+          <li
+            key={item.id}
+            className="list-none flex items-center p-3 my-3 border-b border-gray-600">
+            <input
+              onClick={() => toggleItem(item.id)}
+              type="checkbox"
+              checked={item.checked}
+              className="w-6 h-6 mr-4" />
+            <p className="flex-1 text-lg">{item.label}</p>
 
-              <button
-                onClick={() => deleteItem(item.id)}
-                className="bg-gray-700 border-2 border-gray-600 py-2 px-6 rounded-md ml-3 hover:bg-gray-600"
-              >Deletar</button>
-            </div>
+            <button
+              onClick={() => editItem(item.id)}
+              className="bg-blue-700 py-2 px-6 rounded-md ml-3 hover:bg-blue-600"
+            >Editar</button>
+
+            <button
+              onClick={() => deleteItem(item.id)}
+              className="bg-red-700 py-2 px-6 rounded-md ml-3 hover:bg-red-600"
+            >Deletar</button>
           </li>
         ))}
       </ul>
